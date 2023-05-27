@@ -2,6 +2,7 @@ package firebaserepository
 
 import (
 	"encoding/json"
+	"fmt"
 	"hackernews-service/domain"
 	"io/ioutil"
 	"time"
@@ -42,6 +43,25 @@ func (repository *newsFirebaseRepository) GetTopStories()([]int, error){
 	return topStories, nil
 }
 
-func (repository *newsFirebaseRepository) GetItemById() (*domain.Item, error){
-	return nil, nil
+func (repository *newsFirebaseRepository) GetStoryById(id int) (*domain.Story, error){
+	url := fmt.Sprintf("https://hacker-news.firebaseio.com/v0/item/%d.json?print=pretty", id)
+
+	res, err := repository.HTTPClient.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var itemStory *domain.Story
+	err = json.Unmarshal(body, &itemStory)
+	if err != nil {
+		return nil, err
+	}
+
+	return itemStory, nil
 }

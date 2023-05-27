@@ -2,7 +2,7 @@ package domain
 
 import "net/http"
 
-type Item struct {
+type Story struct {
 	By          string `json:"by"`
 	Descendants int    `json:"descendants"`
 	ID          int    `json:"id"`
@@ -15,12 +15,12 @@ type Item struct {
 }
 
 type NewsUsecase interface {
-	GetAll(story *Item) ([]*Item, error)
+	GetAll(story *Story) ([]*Story, error)
 }
 
 type NewsFirebaseRepository interface {
 	GetTopStories() ([]int, error)
-	GetItemById() (*Item, error)
+	GetStoryById(id int) (*Story, error)
 }
 
 type HTTPClient interface {
