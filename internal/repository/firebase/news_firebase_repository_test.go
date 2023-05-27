@@ -78,6 +78,7 @@ func TestNewsFirebaseRepository_GetStoryById(t *testing.T) {
 		// Arrange
 		buffer := new(bytes.Buffer)
 		err := json.NewEncoder(buffer).Encode(expectTopStories)
+
 		if err != nil {
 			t.Errorf("Error encoding story: %s", err)
 			
@@ -95,6 +96,7 @@ func TestNewsFirebaseRepository_GetStoryById(t *testing.T) {
 
 		// Action
 		story, err := repo.GetStoryById(expectTopStories.ID)
+		
 		if err != nil {
 			t.Errorf("GetTopStories error: %s", err)
 		}
@@ -102,6 +104,7 @@ func TestNewsFirebaseRepository_GetStoryById(t *testing.T) {
 		// Assert
 		require.NoError(t, err)
 		assert.Equal(t, expectTopStories, story)
+
 		mockClient.AssertCalled(t, "Get", url)
 	})
 
@@ -117,6 +120,71 @@ func TestNewsFirebaseRepository_GetStoryById(t *testing.T) {
 
 		// Assert
 		require.Error(t, err)
+
+		mockClient.AssertCalled(t, "Get", url)
+	})
+}
+
+func TestNewsFirebaseRepository_GetCommentById(t *testing.T) {
+	mockClient := &mockhttpclient.MockHTTPClient{}
+
+	expectTopStories := &domain.Comment{
+		ID: 36094267,
+		By: "spaniard89277",
+		Kids: []int{36094432, 36094350, 36094381},
+		Parent: 36093995,
+		Text: "Make housing affordable with denser mixed-use zoning",
+		Time: 1685191208,
+		Type: "comment",
+	}
+	
+	t.Run("success getCommentById", func(t *testing.T) {
+		// Arrange
+		buffer := new(bytes.Buffer)
+		err := json.NewEncoder(buffer).Encode(expectTopStories)
+
+		if err != nil {
+			t.Errorf("Error encoding story: %s", err)
+			
+		}
+
+		mockResponse := &http.Response{
+			StatusCode: http.StatusOK,
+			Body: ioutil.NopCloser(bytes.NewBuffer(buffer.Bytes())),
+		}
+
+		url := fmt.Sprintf("https://hacker-news.firebaseio.com/v0/item/%d.json?print=pretty", expectTopStories.ID)
+		mockClient.On("Get", url).Return(mockResponse, nil)
+
+		repo := firebaserepository.NewNewsFirebaseRepository(mockClient)
+
+		// Action
+		story, err := repo.GetStoryById(expectTopStories.ID)
+
+		if err != nil {
+			t.Errorf("GetTopStories error: %s", err)
+		}
+
+		// Assert
+		require.NoError(t, err)
+		assert.Equal(t, expectTopStories, story)
+
+		mockClient.AssertCalled(t, "Get", url)
+	})
+
+	t.Run("failed can't getStoryById from firebase", func(t *testing.T) {
+		// Arrange
+		url := fmt.Sprintf("https://hacker-news.firebaseio.com/v0/item/%d.json?print=pretty", expectTopStories.ID)
+		mockClient.On("Get", url).Return(nil, errors.New("failed fetch firebase story"))
+	
+		repo := firebaserepository.NewNewsFirebaseRepository(mockClient)
+
+		// Action
+		_, err := repo.GetStoryById(expectTopStories.ID)
+
+		// Assert
+		require.Error(t, err)
+
 		mockClient.AssertCalled(t, "Get", url)
 	})
 }

@@ -14,6 +14,16 @@ type Story struct {
 	URL         string `json:"url"`
 }
 
+type Comment struct {
+	By          string `json:"by"`
+	ID          int    `json:"id"`
+	Kids        []int  `json:"kids"`
+	Parent      int `json:"parent"`
+	Text        string `json:"text"`
+	Time        int    `json:"time"`
+	Type        string `json:"type"`
+}
+
 type ResStories struct {
 	By          		string 	`json:"by"`
 	Descendants 		int    	`json:"descendants"`
@@ -32,6 +42,7 @@ type NewsUsecase interface {
 type NewsFirebaseRepository interface {
 	GetTopStories() ([]int, error)
 	GetStoryById(id int) (*Story, error)
+	GetCommentById(id int) (*Comment, error)
 }
 
 type HTTPClient interface {
