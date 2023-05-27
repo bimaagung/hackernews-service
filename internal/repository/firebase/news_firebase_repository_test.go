@@ -23,10 +23,10 @@ func TestNewsFirebaseRepository_GetTopStories(t *testing.T) {
 		// Arrange
 		mockResponse := &http.Response{
 			StatusCode: http.StatusOK,
-			Body: ioutil.NopCloser(bytes.NewBufferString("[36088672, 36088783, 36087442]")),
+			Body: ioutil.NopCloser(bytes.NewBufferString("[36093995, 36088783, 36087442]")),
 		}
 
-		expectTopStories := []int{36088672, 36088783, 36087442}
+		expectTopStories := []int{36093995, 36088783, 36087442}
 
 		mockClient.On("Get", "https://hacker-news.firebaseio.com/v0/topstories.json?print=pretty").Return(mockResponse, nil)
 

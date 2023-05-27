@@ -14,8 +14,19 @@ type Story struct {
 	URL         string `json:"url"`
 }
 
+type ResStories struct {
+	By          		string 	`json:"by"`
+	Descendants 		int    	`json:"descendants"`
+	ID          		int    	`json:"id"`
+	TotalComment        int  	`json:"total_comment"`
+	Score       		int    	`json:"score"`
+	Time        		int    	`json:"time"`
+	Title       		string 	`json:"title"`
+	URL         		string 	`json:"url"`
+}
+
 type NewsUsecase interface {
-	GetAll(story *Story) ([]*Story, error)
+	GetAll() ([]*ResStories, error)
 }
 
 type NewsFirebaseRepository interface {

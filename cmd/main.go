@@ -2,6 +2,7 @@ package main
 
 import (
 	"hackernews-service/internal/delivery"
+	firebaserepository "hackernews-service/internal/repository/firebase"
 	"hackernews-service/internal/usecase"
 	"log"
 	"net/http"
@@ -9,7 +10,8 @@ import (
 
 func main() {
 
-	newsUsecase := usecase.NewNewsUsecase()
+	newsFirebaseRepository := firebaserepository.NewNewsFirebaseRepository(http.DefaultClient)
+	newsUsecase := usecase.NewNewsUsecase(newsFirebaseRepository)
 
 	newsHandler := &delivery.NewsHandler{
 		NewsUseCase: newsUsecase,
