@@ -4,8 +4,6 @@ import (
 	"hackernews-service/domain"
 )
 
-
-
 func NewNewsUsecase(newsFirebaseRepository domain.NewsFirebaseRepository) domain.NewsUsecase {
 	return &newsUsecase{
 		NewsFirebaseRepository: newsFirebaseRepository,

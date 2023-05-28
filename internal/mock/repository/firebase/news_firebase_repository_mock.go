@@ -53,3 +53,25 @@ func (m *NewsFirebaseRepository) GetStoryById(id int)(*domain.Story, error){
 
 	return r0, r1
 }
+
+func (m *NewsFirebaseRepository) GetCommentById(id int)(*domain.Comment, error){
+	ret := m.Called(id)
+
+	var r0 *domain.Comment
+
+	if rf, ok := ret.Get(0).(func(int) *domain.Comment); ok {
+		r0 = rf(id)
+	}else {
+		r0 = ret.Get(0).(*domain.Comment)
+	}
+
+	var r1 error
+
+	if rf, ok := ret.Get(1).(func(int) error); ok {
+		r1 = rf(id)
+	}else{
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
