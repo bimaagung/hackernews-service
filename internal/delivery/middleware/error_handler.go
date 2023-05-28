@@ -1,8 +1,8 @@
 package mw
 
 import (
+	"fmt"
 	"hackernews-service/helpers/response"
-	"log"
 	"net/http"
 )
 
@@ -41,7 +41,7 @@ func ErrorHandler(next http.Handler) http.Handler {
 				case *NotFoundError:
 					response.Error(w, http.StatusNotFound, e.Message)
 				case *InternalServerError:
-					log.Println(e.Message)
+					fmt.Println(e.Message)
 					response.Error(w, http.StatusInternalServerError,"internal server error")
 				default:
 					response.Error(w, http.StatusInternalServerError,"internal server error")

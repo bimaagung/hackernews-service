@@ -35,10 +35,15 @@ func (repository *newsFirebaseRepository) GetTopStories()([]int, error){
 	}
 
 	err = json.Unmarshal(bodyTopStories, &topStories)
-	
+
 	if err != nil {
 		return nil, &mw.InternalServerError{Message: err.Error()}
 	}
+	
+	if topStories == nil {
+		return nil, &mw.NotFoundError{Message: constants.TopStoriesNotFound}
+	}
+	
 	return topStories, nil
 }
 
@@ -47,7 +52,7 @@ func (repository *newsFirebaseRepository) GetStoryById(id int) (*domain.Story, e
 
 	res, err := repository.HTTPClient.Get(url)
 	if err != nil {
-		return nil, &mw.NotFoundError{Message: constants.StoryNotFound}
+		return nil, &mw.InternalServerError{Message: err.Error()}
 	}
 	defer res.Body.Close()
 
@@ -58,8 +63,13 @@ func (repository *newsFirebaseRepository) GetStoryById(id int) (*domain.Story, e
 
 	var itemStory *domain.Story
 	err = json.Unmarshal(body, &itemStory)
+
 	if err != nil {
 		return nil, &mw.InternalServerError{Message: err.Error()}
+	}
+
+	if itemStory == nil {
+		return nil, &mw.NotFoundError{Message: constants.StoryNotFound}
 	}
 
 	return itemStory, nil
@@ -69,20 +79,28 @@ func (repository *newsFirebaseRepository) GetCommentById(id int) (*domain.Commen
 	url := fmt.Sprintf("https://hacker-news.firebaseio.com/v0/item/%d.json?print=pretty", id)
 
 	res, err := repository.HTTPClient.Get(url)
+
 	if err != nil {
-		return nil, &mw.NotFoundError{Message: constants.CommentNotFound}
+		return nil, &mw.InternalServerError{Message: err.Error()}
 	}
+
 	defer res.Body.Close()
 
 	body, err := ioutil.ReadAll(res.Body)
+
 	if err != nil {
 		return nil, &mw.InternalServerError{Message: err.Error()}
 	}
 
 	var itemComment *domain.Comment
 	err = json.Unmarshal(body, &itemComment)
+
 	if err != nil {
 		return nil, &mw.InternalServerError{Message: err.Error()}
+	}
+
+	if itemComment == nil {
+		return nil, &mw.NotFoundError{Message: constants.CommentNotFound}
 	}
 
 	return itemComment, nil
