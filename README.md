@@ -1,5 +1,7 @@
 # HackerNews Service
 
+**For the HackerNews App built with Laravel, please visit the [HackerNews App repository](https://github.com/bimaagung/hackernews-app.git).**
+
 ## Installation
 
 To get started with the HackerNews Service project, follow the steps below:
