@@ -62,8 +62,10 @@ func TestNewsFirebaseRepository_GetTopStories(t *testing.T) {
 func TestNewsFirebaseRepository_GetStoryById(t *testing.T) {
 	mockClient := &mockhttpclient.MockHTTPClient{}
 
-	expectTopStories := &domain.Story{
-		ID: 36093995,
+	var id int = 36093995
+
+	expectStory := &domain.Story{
+		ID: id,
 		By: "martincmartin",
 		Descendants: 24,
 		Kids: []int{36094267, 36094186, 36094203},
@@ -77,7 +79,7 @@ func TestNewsFirebaseRepository_GetStoryById(t *testing.T) {
 	t.Run("success getStoryById", func(t *testing.T) {
 		// Arrange
 		buffer := new(bytes.Buffer)
-		err := json.NewEncoder(buffer).Encode(expectTopStories)
+		err := json.NewEncoder(buffer).Encode(expectStory)
 
 		if err != nil {
 			t.Errorf("Error encoding story: %s", err)
@@ -89,13 +91,13 @@ func TestNewsFirebaseRepository_GetStoryById(t *testing.T) {
 			Body: ioutil.NopCloser(bytes.NewBuffer(buffer.Bytes())),
 		}
 
-		url := fmt.Sprintf("https://hacker-news.firebaseio.com/v0/item/%d.json?print=pretty", expectTopStories.ID)
+		url := fmt.Sprintf("https://hacker-news.firebaseio.com/v0/item/%d.json?print=pretty", id)
 		mockClient.On("Get", url).Return(mockResponse, nil)
 
 		repo := firebaserepository.NewNewsFirebaseRepository(mockClient)
 
 		// Action
-		story, err := repo.GetStoryById(expectTopStories.ID)
+		story, err := repo.GetStoryById(id)
 		
 		if err != nil {
 			t.Errorf("GetTopStories error: %s", err)
@@ -103,20 +105,20 @@ func TestNewsFirebaseRepository_GetStoryById(t *testing.T) {
 
 		// Assert
 		require.NoError(t, err)
-		assert.Equal(t, expectTopStories, story)
+		assert.Equal(t, expectStory, story)
 
 		mockClient.AssertCalled(t, "Get", url)
 	})
 
 	t.Run("failed can't getStoryById from firebase", func(t *testing.T) {
 		// Arrange
-		url := fmt.Sprintf("https://hacker-news.firebaseio.com/v0/item/%d.json?print=pretty", expectTopStories.ID)
+		url := fmt.Sprintf("https://hacker-news.firebaseio.com/v0/item/%d.json?print=pretty", id)
 		mockClient.On("Get", url).Return(nil, errors.New("failed fetch firebase story"))
 	
 		repo := firebaserepository.NewNewsFirebaseRepository(mockClient)
 
 		// Action
-		_, err := repo.GetStoryById(expectTopStories.ID)
+		_, err := repo.GetStoryById(id)
 
 		// Assert
 		require.Error(t, err)
