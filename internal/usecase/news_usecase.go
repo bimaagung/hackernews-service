@@ -82,7 +82,6 @@ func (uc newsUsecase) GetStoryById(id int) (*domain.ResStory, error) {
 			resComment := &domain.ResComment{
 				ID: comment.ID,
 				By: comment.By,
-				TotalComment: len(comment.Kids),
 				Parent: comment.Parent,
 				Text: comment.Text,
 				Time: comment.Time,
@@ -142,7 +141,6 @@ func (uc newsUsecase) GetCommentById(id int)(*domain.ResComment, error) {
 			resComment := &domain.ResComment{
 				ID: comment.ID,
 				By: comment.By,
-				TotalComment: len(comment.Kids),
 				Parent: comment.Parent,
 				Text: comment.Text,
 				Time: comment.Time,
@@ -170,7 +168,6 @@ func (uc newsUsecase) GetCommentById(id int)(*domain.ResComment, error) {
 	resComment = &domain.ResComment{
 		ID: comment.ID,
 		By: comment.By,
-		TotalComment: len(comment.Kids),
 		Comments: itemComments,
 		Parent: comment.Parent,
 		Text: comment.Text,

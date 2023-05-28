@@ -39,7 +39,6 @@ type Comment struct {
 type ResComment struct {
 	By          	string 			`json:"by"`
 	ID          	int    			`json:"id"`
-	TotalComment    int  			`json:"total_comment"`
 	Comments 		[]*ResComment 	`json:"comments"`
 	Parent      	int 			`json:"parent"`
 	Text        	string 			`json:"text"`

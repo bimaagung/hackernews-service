@@ -3,6 +3,8 @@ package delivery
 import (
 	"net/http"
 
+	mw "hackernews-service/internal/delivery/middleware"
+
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
@@ -21,6 +23,8 @@ func NewRouter(newsHandler *NewsHandler) http.Handler {
 		AllowCredentials: true,
 		MaxAge: 300,
 	}))
+	router.Use(mw.ErrorHandler)
+
 
 	router.Use(middleware.Heartbeat("/ping"))
 
