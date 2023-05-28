@@ -1,3 +1,48 @@
+# HackerNews Service
+
+## Installation
+
+To get started with the HackerNews Service project, follow the steps below:
+
+1. **Clone the Repository**
+
+   Clone the project repository using the following command:
+
+   ```
+   git clone https://github.com/bimaagung/hackernews-service.git
+   ```
+
+2. **Navigate to the Project Directory**
+
+   Navigate to the project directory using the following command:
+
+   ```
+   cd hackernews-service
+   ```
+
+3. **Install Dependencies**
+
+   The project uses Go modules for dependency management. Use the following command to install the dependencies:
+
+   ```
+   go mod download
+   ```
+
+4. **Start the Project**
+
+   Start the project using the provided Makefile target:
+
+   ```
+   make start
+   ```
+
+   This command will build and run the HackerNews Service.
+
+   The HackerNews Service will be accessible at `http://localhost:8080`.
+
+---
+
+
 # API Documentation
 
 This documentation provides details on how to use the API for retrieving news information.
