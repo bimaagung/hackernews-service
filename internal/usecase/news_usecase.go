@@ -121,3 +121,62 @@ func (uc newsUsecase) GetStoryById(id int) (*domain.ResStory, error) {
 
 	return resStory, nil
 }
+
+func (uc newsUsecase) GetCommentById(id int)(*domain.ResComment, error) {
+	var itemComments []*domain.ResComment
+	var resComment *domain.ResComment
+
+	comment, err := uc.NewsFirebaseRepository.GetCommentById(id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	itemCommentChan := make(chan *domain.ResComment)
+
+	for _, v := range comment.Kids {
+		
+
+		go func(id int) {
+			comment, err := uc.NewsFirebaseRepository.GetCommentById(id)
+			resComment := &domain.ResComment{
+				ID: comment.ID,
+				By: comment.By,
+				TotalComment: len(comment.Kids),
+				Parent: comment.Parent,
+				Text: comment.Text,
+				Time: comment.Time,
+				Type: comment.Type,
+			}
+			
+			if err != nil {
+				itemCommentChan <- nil 
+				return
+			}
+
+			itemCommentChan <- resComment
+		}(v)
+	}
+
+	for range comment.Kids {
+		itemComment := <-itemCommentChan
+		if itemComment != nil {
+			itemComments = append(itemComments, itemComment)
+		}
+	}
+
+	close(itemCommentChan)
+
+	resComment = &domain.ResComment{
+		ID: comment.ID,
+		By: comment.By,
+		TotalComment: len(comment.Kids),
+		Comments: itemComments,
+		Parent: comment.Parent,
+		Text: comment.Text,
+		Time: comment.Time,
+		Type: comment.Type,
+	}
+
+	return resComment, nil
+}

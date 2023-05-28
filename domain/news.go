@@ -37,13 +37,14 @@ type Comment struct {
 }
 
 type ResComment struct {
-	By          	string 		`json:"by"`
-	ID          	int    		`json:"id"`
-	TotalComment    int  		`json:"total_comment"`
-	Parent      	int 		`json:"parent"`
-	Text        	string 		`json:"text"`
-	Time        	int    		`json:"time"`
-	Type        	string 		`json:"type"`
+	By          	string 			`json:"by"`
+	ID          	int    			`json:"id"`
+	TotalComment    int  			`json:"total_comment"`
+	Comments 		[]*ResComment 	`json:"comments"`
+	Parent      	int 			`json:"parent"`
+	Text        	string 			`json:"text"`
+	Time        	int    			`json:"time"`
+	Type        	string 			`json:"type"`
 }
 
 type ResStories struct {
@@ -60,6 +61,7 @@ type ResStories struct {
 type NewsUsecase interface {
 	GetAll() ([]*ResStories, error)
 	GetStoryById(id int)(*ResStory, error)
+	GetCommentById(id int)(*ResComment, error)
 }
 
 type NewsFirebaseRepository interface {

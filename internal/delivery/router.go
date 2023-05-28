@@ -26,6 +26,7 @@ func NewRouter(newsHandler *NewsHandler) http.Handler {
 
 	router.Get("/news", newsHandler.GetAll)
 	router.Get("/news/story/{storyId}", newsHandler.GetStoryById)
+	router.Get("/news/comment/{commentId}", newsHandler.GetCommentById)
 
 	return router
 
