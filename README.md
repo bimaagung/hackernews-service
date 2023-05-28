@@ -49,6 +49,7 @@ To get started with the HackerNews Service project, follow the steps below:
 
 This documentation provides details on how to use the API for retrieving news information.
 
+**For open via Postman HackerNews API, please visit the [HackerNews API Postman](https://documenter.getpostman.com/view/20841766/2s93m8xeup).**
 
 ## Endpoint
 
