@@ -15,15 +15,15 @@ type Story struct {
 }
 
 type ResStory struct {
-	By          	string 		`json:"by"`
-	Descendants 	int    		`json:"descendants"`
-	ID          	int    		`json:"id"`
-	Comments        []ResComment `json:"comments"`
-	Score       	int    		`json:"score"`
-	Time        	int    		`json:"time"`
-	Title       	string 		`json:"title"`
-	Type        	string 		`json:"type"`
-	URL         	string 		`json:"url"`
+	By          	string 		 `json:"by"`
+	Descendants 	int    		 `json:"descendants"`
+	ID          	int    		 `json:"id"`
+	Comments        []*ResComment `json:"comments"`
+	Score       	int    		 `json:"score"`
+	Time        	int    		 `json:"time"`
+	Title       	string 		 `json:"title"`
+	Type        	string 		 `json:"type"`
+	URL         	string 		 `json:"url"`
 }
 
 type Comment struct {
@@ -37,13 +37,13 @@ type Comment struct {
 }
 
 type ResComment struct {
-	By          	string 			`json:"by"`
-	ID          	int    			`json:"id"`
-	Comments        []ResComment  	`json:"comments"`
-	Parent      	int 			`json:"parent"`
-	Text        	string 			`json:"text"`
-	Time        	int    			`json:"time"`
-	Type        	string 			`json:"type"`
+	By          	string 		`json:"by"`
+	ID          	int    		`json:"id"`
+	TotalComment    int  		`json:"total_comment"`
+	Parent      	int 		`json:"parent"`
+	Text        	string 		`json:"text"`
+	Time        	int    		`json:"time"`
+	Type        	string 		`json:"type"`
 }
 
 type ResStories struct {
@@ -59,6 +59,7 @@ type ResStories struct {
 
 type NewsUsecase interface {
 	GetAll() ([]*ResStories, error)
+	GetStoryById(id int)(*ResStory, error)
 }
 
 type NewsFirebaseRepository interface {

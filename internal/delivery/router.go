@@ -25,6 +25,7 @@ func NewRouter(newsHandler *NewsHandler) http.Handler {
 	router.Use(middleware.Heartbeat("/ping"))
 
 	router.Get("/news", newsHandler.GetAll)
+	router.Get("/news/story/{storyId}", newsHandler.GetStoryById)
 
 	return router
 
