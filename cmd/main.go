@@ -4,6 +4,7 @@ import (
 	"hackernews-service/internal/delivery"
 	firebaserepository "hackernews-service/internal/repository/firebase"
 	"hackernews-service/internal/usecase"
+	memorycache "hackernews-service/pkg/memory_cache"
 	"log"
 	"net/http"
 )
@@ -11,7 +12,9 @@ import (
 func main() {
 
 	newsFirebaseRepository := firebaserepository.NewNewsFirebaseRepository(http.DefaultClient)
-	newsUsecase := usecase.NewNewsUsecase(newsFirebaseRepository)
+	cache := memorycache.NewMemoryCache()
+	newsUsecase := usecase.NewNewsUsecase(newsFirebaseRepository, cache)
+	newsUsecase.StartCacheUpdate()
 
 	newsHandler := &delivery.NewsHandler{
 		NewsUseCase: newsUsecase,
