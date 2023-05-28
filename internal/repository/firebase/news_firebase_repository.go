@@ -65,3 +65,7 @@ func (repository *newsFirebaseRepository) GetStoryById(id int) (*domain.Story, e
 
 	return itemStory, nil
 }
+
+func (repository *newsFirebaseRepository) GetCommentById(id int) (*domain.Comment, error){
+	return nil, nil
+}
