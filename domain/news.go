@@ -58,6 +58,7 @@ type ResStories struct {
 }
 
 type NewsUsecase interface {
+	StartCacheUpdate()
 	GetAll() ([]*ResStories, error)
 	GetStoryById(id int)(*ResStory, error)
 	GetCommentById(id int)(*ResComment, error)
@@ -67,6 +68,7 @@ type NewsFirebaseRepository interface {
 	GetTopStories() ([]int, error)
 	GetStoryById(id int) (*Story, error)
 	GetCommentById(id int) (*Comment, error)
+
 }
 
 type HTTPClient interface {

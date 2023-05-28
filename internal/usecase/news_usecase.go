@@ -2,53 +2,100 @@ package usecase
 
 import (
 	"hackernews-service/domain"
+	memorycache "hackernews-service/pkg/memory_cache"
+	"strconv"
+	"time"
 )
 
-func NewNewsUsecase(newsFirebaseRepository domain.NewsFirebaseRepository) domain.NewsUsecase {
+const (
+	cacheExpirationTime = 5 * time.Minute
+	cacheUpdateInterval = 30 * time.Second
+)
+
+func NewNewsUsecase(newsFirebaseRepository domain.NewsFirebaseRepository, cache memorycache.Cache) domain.NewsUsecase {
 	return &newsUsecase{
-		NewsFirebaseRepository: newsFirebaseRepository,
+		NewsFirebaseRepository	: newsFirebaseRepository,
+		Cache					:cache,
 	}
 }
 
 type newsUsecase struct{
 	NewsFirebaseRepository domain.NewsFirebaseRepository
+	Cache                  memorycache.Cache
 }
 
-func (uc newsUsecase) GetAll() ([]*domain.ResStories, error) {
-	var itemStories []*domain.ResStories
+func (uc *newsUsecase)StartCacheUpdate() {
+	go uc.updateCachePeriodically()
+}
 
-	topStories, err := uc.NewsFirebaseRepository.GetTopStories() 
+func (uc *newsUsecase) updateCachePeriodically() {
+	for {
+		uc.GetAll()
+		time.Sleep(cacheUpdateInterval)
+	}
+}
 
+func (uc *newsUsecase) GetAll() ([]*domain.ResStories, error) {
+	
+	itemStoriesCache, err := uc.Cache.Get("all_stories")
+
+	if err == nil {
+		if stories, ok := itemStoriesCache.([]*domain.ResStories); ok {
+			return stories, nil
+		}
+	}
+
+	topStories, err := uc.NewsFirebaseRepository.GetTopStories()
 	if err != nil {
 		return nil, err
 	}
 
 	itemStoryChan := make(chan *domain.ResStories)
 
-	for _, v := range topStories {
-		
-
-		go func(id int) {
-			story, err := uc.NewsFirebaseRepository.GetStoryById(id)
-			itemStory := &domain.ResStories{
-				ID: story.ID,
-				By: story.By,
-				Descendants: story.Descendants,
-				TotalComment: len(story.Kids),
-				Score: story.Score,
-				Time: story.Time,
-				Title: story.Title,
-				URL: story.URL,
+	for _, id := range topStories {
+	storyRaw, err := uc.Cache.Get("story_" + strconv.Itoa(id))
+	if err == nil {
+		if story, ok := storyRaw.(*domain.Story); ok {
+			itemStoryChan <- &domain.ResStories{
+				ID:            story.ID,
+				By:            story.By,
+				Descendants:   story.Descendants,
+				TotalComment:  len(story.Kids),
+				Score:         story.Score,
+				Time:          story.Time,
+				Title:         story.Title,
+				URL:           story.URL,
 			}
-			
-			if err != nil {
-				itemStoryChan <- nil 
-				return
-			}
-
-			itemStoryChan <- itemStory
-		}(v)
+			continue
+		}
 	}
+
+	go func(storyID int) {
+		story, err := uc.NewsFirebaseRepository.GetStoryById(storyID)
+		itemStory := &domain.ResStories{
+			ID:            story.ID,
+			By:            story.By,
+			Descendants:   story.Descendants,
+			TotalComment:  len(story.Kids),
+			Score:         story.Score,
+			Time:          story.Time,
+			Title:         story.Title,
+			URL:           story.URL,
+		}
+
+		if err != nil {
+			itemStoryChan <- nil
+			return
+		}
+
+		uc.Cache.Set("story_"+strconv.Itoa(storyID), story, cacheExpirationTime)
+
+		itemStoryChan <- itemStory
+	}(id)
+}
+
+
+	var itemStories []*domain.ResStories
 
 	for range topStories {
 		itemStory := <-itemStoryChan
@@ -59,10 +106,13 @@ func (uc newsUsecase) GetAll() ([]*domain.ResStories, error) {
 
 	close(itemStoryChan)
 
+	// Menyimpan semua stories ke cache
+	uc.Cache.Set("all_stories", itemStories, cacheExpirationTime)
+
 	return itemStories, nil
 }
 
-func (uc newsUsecase) GetStoryById(id int) (*domain.ResStory, error) {
+func (uc *newsUsecase) GetStoryById(id int) (*domain.ResStory, error) {
 	var itemComments []*domain.ResComment
 	var resStory *domain.ResStory
 
@@ -121,7 +171,7 @@ func (uc newsUsecase) GetStoryById(id int) (*domain.ResStory, error) {
 	return resStory, nil
 }
 
-func (uc newsUsecase) GetCommentById(id int)(*domain.ResComment, error) {
+func (uc *newsUsecase) GetCommentById(id int)(*domain.ResComment, error) {
 	var itemComments []*domain.ResComment
 	var resComment *domain.ResComment
 
