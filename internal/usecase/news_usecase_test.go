@@ -118,6 +118,7 @@ func TestNewsUC_GetStoryById(t *testing.T){
 
 		uc := usecase.NewNewsUsecase(
 			mockNewsFirebaseRepository,
+			nil,
 		)
 
 		// Action

@@ -53,10 +53,26 @@ func (uc *newsUsecase) GetAll() ([]*domain.ResStories, error) {
 	itemStoryChan := make(chan *domain.ResStories)
 
 	for _, id := range topStories {
-	storyRaw, err := uc.Cache.Get("story_" + strconv.Itoa(id))
-	if err == nil {
-		if story, ok := storyRaw.(*domain.Story); ok {
-			itemStoryChan <- &domain.ResStories{
+		storyRaw, err := uc.Cache.Get("story_" + strconv.Itoa(id))
+		if err == nil {
+			if story, ok := storyRaw.(*domain.Story); ok {
+				itemStoryChan <- &domain.ResStories{
+					ID:            story.ID,
+					By:            story.By,
+					Descendants:   story.Descendants,
+					TotalComment:  len(story.Kids),
+					Score:         story.Score,
+					Time:          story.Time,
+					Title:         story.Title,
+					URL:           story.URL,
+				}
+				continue
+			}
+		}
+
+		go func(storyID int) {
+			story, err := uc.NewsFirebaseRepository.GetStoryById(storyID)
+			itemStory := &domain.ResStories{
 				ID:            story.ID,
 				By:            story.By,
 				Descendants:   story.Descendants,
@@ -66,33 +82,17 @@ func (uc *newsUsecase) GetAll() ([]*domain.ResStories, error) {
 				Title:         story.Title,
 				URL:           story.URL,
 			}
-			continue
-		}
+
+			if err != nil {
+				itemStoryChan <- nil
+				return
+			}
+
+			uc.Cache.Set("story_"+strconv.Itoa(storyID), story, cacheExpirationTime)
+
+			itemStoryChan <- itemStory
+		}(id)
 	}
-
-	go func(storyID int) {
-		story, err := uc.NewsFirebaseRepository.GetStoryById(storyID)
-		itemStory := &domain.ResStories{
-			ID:            story.ID,
-			By:            story.By,
-			Descendants:   story.Descendants,
-			TotalComment:  len(story.Kids),
-			Score:         story.Score,
-			Time:          story.Time,
-			Title:         story.Title,
-			URL:           story.URL,
-		}
-
-		if err != nil {
-			itemStoryChan <- nil
-			return
-		}
-
-		uc.Cache.Set("story_"+strconv.Itoa(storyID), story, cacheExpirationTime)
-
-		itemStoryChan <- itemStory
-	}(id)
-}
 
 
 	var itemStories []*domain.ResStories
@@ -106,7 +106,6 @@ func (uc *newsUsecase) GetAll() ([]*domain.ResStories, error) {
 
 	close(itemStoryChan)
 
-	// Menyimpan semua stories ke cache
 	uc.Cache.Set("all_stories", itemStories, cacheExpirationTime)
 
 	return itemStories, nil
