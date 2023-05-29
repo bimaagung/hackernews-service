@@ -2,6 +2,11 @@
 
 **For the HackerNews App built with Laravel, please visit the [HackerNews App repository](https://github.com/bimaagung/hackernews-app.git).**
 
+
+**For open via Postman HackerNews API, please visit the [HackerNews API Postman](https://documenter.getpostman.com/view/20841766/2s93m8zLrQ).**
+
+**Access url: https://dark-readers-cross-quietly.a276.dcdg.xyz/api/news**
+
 ## Installation
 
 To get started with the HackerNews Service project, follow the steps below:
@@ -49,7 +54,6 @@ To get started with the HackerNews Service project, follow the steps below:
 
 This documentation provides details on how to use the API for retrieving news information.
 
-**For open via Postman HackerNews API, please visit the [HackerNews API Postman](https://documenter.getpostman.com/view/20841766/2s93m8xeup).**
 
 ## Endpoint
 
