@@ -2,7 +2,7 @@ module.exports = {
   apps: [
     {
       name: 'hackernews-service',
-      script: './cmd/main.go',
+      script: './bin/main',
       watch: true,
       ignore_watch: ['node_modules'],
       watch_options: {
