@@ -3,7 +3,7 @@
 **For the HackerNews App built with Laravel, please visit the [HackerNews App repository](https://github.com/bimaagung/hackernews-app.git).**
 
 
-**For open via Postman HackerNews API, please visit the [HackerNews API Postman](https://documenter.getpostman.com/view/20841766/2s93m8xeup).**
+**For open via Postman HackerNews API, please visit the [HackerNews API Postman](https://documenter.getpostman.com/view/20841766/2s93m8zLrQ).**
 
 **Access url: https://dark-readers-cross-quietly.a276.dcdg.xyz/api/news**
 
